@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<!--
+Created by Michael Cartwright
+-->
+<html>
+
+<head>
+
+<script>
+    function getCookie(cname) {
+        var name = cname + "=";
+        var ca = document.cookie.split(';');
+        for(var index = 0; index < ca.length; index++) {
+            var c = ca[index];
+            while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+            }
+        }
+        return "";
+    }
+    
+    function changeBody(image_name, rasp_no, uav_header, uav_position, uav_altitude, uav_velocity, grid_no) {
+        document.getElementById("image_name_id").innerHTML = "File/Image Name:" + image_name;
+        document.getElementById("rasp_no_id").innerHTML = "UAV/Raspi No:" + rasp_no; //13
+        document.getElementById("uav_header_id").innerHTML = "UAV Header:  " + uav_header; //13
+        document.getElementById("uav_position_id").innerHTML = "UAV Position:" + uav_position; //13
+        document.getElementById("uav_altitude_id").innerHTML = "UAV Altitude:" + uav_altitude; //13
+        document.getElementById("uav_velocity_id").innerHTML = "UAV Velocity:" + uav_velocity; //13
+        document.getElementById("grid_no_id").innerHTML = "Grid Number: " + grid_no; //13
+    }
+    
+    function refresh(node) {
+        var image_name = getCookie("image_name");
+        var rasp_no = getCookie("rasp_no");
+        var uav_header = getCookie("uav_header");
+        var uav_position = getCookie("uav_position");
+        var uav_altitude = getCookie("uav_altitude");
+        var uav_velocity = getCookie("uav_velocity");
+        var grid_no = getCookie("grid_no");
+        if (grid_no !== "") {
+            changeBody(image_name, rasp_no, uav_header, uav_position, uav_altitude, uav_velocity, grid_no);
+        }
+    
+        document.getElementById('map_segment').src = mapSegmentDirectory(image_name);
+        
+        // Milliseconds;
+        var times = 1000;
+
+        (function startRefresh() {
+            var address;
+            if(node.src.indexOf('?')>-1)
+                address = node.src.split('?')[0];
+            else 
+                address = node.src;
+                node.src = address+"?time="+new Date().getTime();
+
+            setTimeout(startRefresh,times);
+        })(); // End startRefresh
+    }
+
+    window.onload = function() {
+        var nodeOne = document.getElementById('map_complete');
+        refresh(nodeOne);
+        var nodeTwo = document.getElementById('map_segment');
+        refresh(nodeTwo);
+    }
+    
+    function mapSegmentDirectory(image_name) {
+        return "images/" + image_name;
+    }
+</script>
+
+<title>Real-Time Mapping Web Application</title>
+
+</head>
+
+<body onload="refresh();">
+    <!--New Table Start-->
+    <table border="1">
+        <tr>
+            <th>
+                Current Map
+            </th>
+            <th>
+                Information
+            </th>
+        </tr>
+        <tr>
+            <td>
+                <!--New Table Start-->
+                <table border="0">
+                    <tr>
+                        <td>
+                            <img id="map_complete" src="images/map_update.jpg" height="30%"/>
+                        </td>
+                    </tr>
+                    <tr valign="top">
+                        <td>
+                            <form target="_blank" action="MapOnly.html">
+                                <input type="submit" value="Full Size Map">
+                            </form>
+                        </td>
+                    </tr>
+                </table>
+                <!--New Table End-->
+            <td>
+                <!--New Table Start-->
+                <table border="0" style="width:500px">
+                    <tr style="height:500px">
+                        <td valign="top">
+                            <img id="map_segment" src="" height="100%"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td valign="top">
+                            <form target="_blank" action="MapSegment.html">
+                                <input type="submit" value="Full Size Map Grid">
+                            </form>
+                        </td>
+                    </tr>
+                    <tr style="height:285px">
+                        <td>
+                            <p id="image_name_id">Image/File Name: Search a</p>
+                            <p id="rasp_no_id">UAV/Raspi No: grid number</p>
+                            <p id="uav_header_id">UAV Header: that has been</p>
+                            <p id="uav_position_id">UAV Position: updated to</p>
+                            <p id="uav_altitude_id">UAV Altitude: the database</p>
+                            <p id="uav_velocity_id">UAV Velocity: to view above</p>
+                            <p id="grid_no_id">Grid Number: or at full resolution</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Search for Grid Image
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <form id="Search" action="FindMapSegment" method="POST" name="Search">
+                                <input type="text" id="grid_id" name="grid_id">
+                                <input type="submit" value="Search Grid">
+                            </form>
+                        </td>
+                    </tr>
+                </table>
+                <!--New Table End-->
+            </td>
+        </tr>
+    </table>
+    <!--New Table End-->
+</body>
+</html>

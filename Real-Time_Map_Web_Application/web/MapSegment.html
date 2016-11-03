@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<!--
+Created by Michael Cartwright
+-->
+<html>
+
+<head>
+
+<script>
+    function getCookie(cname) {
+        var name = cname + "=";
+        var ca = document.cookie.split(';');
+        for(var index = 0; index < ca.length; index++) {
+            var c = ca[index];
+            while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+            }
+        }
+        return "";
+    }
+    
+    function refresh(node) {
+        
+        var image_name = getCookie("image_name");
+        
+        document.getElementById('map_segment').src = mapSegmentDirectory(image_name);
+        // Milliseconds;
+        var times = 1000;
+
+        (function startRefresh() {
+            var address;
+            if(node.src.indexOf('?')>-1)
+                address = node.src.split('?')[0];
+            else 
+                address = node.src;
+                node.src = address+"?time="+new Date().getTime();
+
+            setTimeout(startRefresh,times);
+        })(); // End startRefresh
+    }
+
+    window.onload = function() {
+        var nodeTwo = document.getElementById('map_segment');
+        refresh(nodeTwo);
+    }
+    
+    function mapSegmentDirectory(image_name) {
+        return "images/" + image_name;
+    }
+</script>
+
+<title>Map Segment True Size</title>
+
+</head>
+
+<body onload="refresh();">
+    <img id="map_segment" src="" height="100%"/>
+</body>
+
+</html>
